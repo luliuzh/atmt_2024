@@ -5,6 +5,7 @@ import os
 import sys
 import re
 import pickle
+from subword_nmt import apply_bpe, learn_bpe
 
 # establish link to seq2seq dir
 # scripts_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,11 +17,15 @@ from seq2seq.data.dictionary import Dictionary
 
 SPACE_NORMALIZER = re.compile("\s+")
 
-
 def word_tokenize(line):
     line = SPACE_NORMALIZER.sub(" ", line)
     line = line.strip()
-    return line.split()
+    
+    with open('data/en-fr/raw/bpe_30000.codes', 'r') as codes_file:
+        bpe = apply_bpe.BPE(codes_file)
+
+    bpe_encoded_line = bpe.process_line(line)
+    return bpe_encoded_line.split()
 
 
 def get_args():
